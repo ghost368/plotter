@@ -49,16 +49,19 @@ def get_axes(
     Returns:
         [tuple, ax]: tuple of axes, single ax, or (fig, axes tuple)
     """
-    figsize = (
+    figsize = [
         _MPL_CONFIG['default_fig_width'],
         height / _MPL_CONFIG['unit_convertion_factor'],
-    )
+    ]
     if ncols == 1:
         if small:
             figsize[0] = _MPL_CONFIG['default_small_fig_width']
+    figsize = tuple(figsize)
     if wratios is not None:
         if len(wratios) != ncols:
-            raise ValueError('Width ratios must be the same length as the number of subplots')
+            raise ValueError(
+                'Width ratios must be the same length as the number of subplots'
+            )
         gridspec_kw = {'width_ratios': list(wratios)}
     else:
         gridspec_kw = None
@@ -67,7 +70,6 @@ def get_axes(
         return fig, axes
     else:
         return axes
-
 
 
 def set_mpl_layout(

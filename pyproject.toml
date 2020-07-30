@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "qplot"
-version = "0.1.0"
+version = "0.1.1"
 description = "Plotting configurations for matplotlib, seaborn and plotly"
 authors = ["Vlad Stazhynski <stazhynski@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-matplotlib "^3.1.0"
-seaborn ">=0.10.1"
-plotly ">=4.9.0"
+matplotlib = "^3.1.0"
+seaborn = ">=0.10.1"
+plotly = ">=4.9.0"
 jupyter = "*"
 black = "^19.10b0"
 psutil = "^5.7.2"
@@ -18,7 +18,7 @@ loguru = "^0.5.1"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.16.1"
-pytest = "^5.0"
+pytest = "*"
 
 [build-system]
 requires = ["poetry>=0.12"]
