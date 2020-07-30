@@ -1,0 +1,7 @@
+name: /home/vlad/projects/qplot/.env
+channels:
+  - default
+  - plotly
+dependencies:
+  - python>=3.8
+  - plotly-orca>=1.2.1
