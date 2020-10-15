@@ -1,8 +1,10 @@
+from matplotlib.pyplot import legend
 import numpy as np
+import pandas as pd
 import pytest
 import plotly.express as px
 
-from qplot import get_axes, set_mpl_layout, set_plotly_layout
+import qplot
 
 
 def test_activate():
@@ -11,25 +13,31 @@ def test_activate():
 
 def test_mpl():
     data = np.random.rand(20, 2)
-    ax1, ax2 = get_axes(height=10, ncols=2, wratios=[2, 3])
-    ax1.plot(data)
-    ax2.scatter(range(len(data)), data[:, 0])
-    set_mpl_layout(ax1, 'title', 'xvalues', 'yvalues', legend_outside=False)
 
-    fig, ax = get_axes(return_fig=True, small=True)
-    ax.plot(data)
-    set_mpl_layout(ax, legend=False)
+    with qplot.plot(6, title='some title', wide=True, legend=False) as p:
+        p.ax().plot(data)
 
     with pytest.raises(ValueError):
-        axes = get_axes(ncols=3, wratios=[1, 2])
+        with qplot.plot(ncols=3, wratios=[1, 2]) as p:
+            p.ax().plot(data)
+
+    df = pd.DataFrame(data)
+    with qplot.plot(xlabel='x'):
+        df.plot()
+
+    with qplot.plot(ncols=2, wratios=[2, 1]) as p:
+        df.plot(ax=p.ax(1))
+        df.plot(ax=p.ax(2))
+        p.set_layout(ax_idx=1, title='first')
+        p.set_layout(ax_idx=2, ylabel='y 2')
 
 
 def test_plotly():
     data = np.random.rand(20, 2)
-    fig = px.line(x=range(len(data)), y=data[:, 0])
-    set_plotly_layout(fig, height=8, title='title', ylabel='y values', small=True)
-    fig.show()
 
-    fig = px.line(x=range(len(data)), y=data[:, 1])
-    set_plotly_layout(fig, is_svg=True)
-    fig.show()
+    with qplot.plot(wide=True, engine='plotly', title='title') as p:
+        p.fig = px.line(x=range(len(data)), y=data[:, 0])
+
+    df = pd.DataFrame(data)
+    with qplot.plot(engine='plotly') as p:
+        p.fig = df.plot()

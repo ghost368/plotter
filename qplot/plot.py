@@ -19,7 +19,9 @@ class Plot:
     def ax(self, idx=1):
         return self._axes[idx - 1]
 
-    def n_axes(self):
+    def nplots(self):
+        if self._axes is None:
+            return 1
         return len(self._axes)
 
     def set_layout(self, ax_idx=None, **kwargs):
@@ -43,7 +45,7 @@ def plot(
     if engine == 'matplotlib':
         fig, axes = get_mpl_axes(height=height, ncols=ncols, wratios=wratios, wide=wide)
         pt = Plot(fig, axes, engine=engine)
-        if pt.n_axes() == 1:
+        if pt.nplots() == 1:
             plt.sca(pt.ax())
     elif engine == 'plotly':
         pt = Plot(engine=engine)
@@ -54,7 +56,8 @@ def plot(
     try:
         yield pt
     finally:
-        pt.set_layout(wide=wide, **kwargs)
+        if pt.nplots() == 1:
+            pt.set_layout(wide=wide, height=height, **kwargs)
         if engine == 'plotly':
             pt.fig.show()
         pd.options.plotting.backend = 'matplotlib'

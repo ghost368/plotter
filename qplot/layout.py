@@ -51,7 +51,7 @@ def get_mpl_axes(
         [tuple, ax]: tuple of axes, single ax, or (fig, axes tuple)
     """
     if height is None:
-        height = MPL_CONFIG['default_fig_width']
+        height = MPL_CONFIG['default_height_units']
     if ncols is None:
         ncols = MPL_CONFIG['default_number_cols']
     figsize = [
@@ -115,7 +115,7 @@ def set_mpl_layout(
 
 def set_plotly_layout(
     fig,
-    height=8,
+    height=None,
     title=None,
     xlabel=None,
     ylabel=None,
@@ -140,6 +140,8 @@ def set_plotly_layout(
         legend_label_map ([dict-like], optional): Mapping to modify legend names, absent names will remain the
                 same. Defaults to None.
     """
+    if height is None:
+        height = MPL_CONFIG['default_height_units']
     fig.update_layout(
         xaxis_title_font_size=PLOTLY_CONFIG['title_font_size'],
         yaxis_title_font_size=PLOTLY_CONFIG['title_font_size'],
