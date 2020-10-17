@@ -13,7 +13,7 @@ MPL_CONFIG = {
     'default_fig_width': 10,
     'default_small_fig_width': 7,
     'unit_convertion_factor': 2,
-    'default_height_units': 8,
+    'default_height_units': 7,
     'default_number_cols': 1,
     'legend_font_size': 9,
     'axes_label_size': 12,
@@ -23,10 +23,11 @@ MPL_CONFIG = {
 PLOTLY_CONFIG = {
     'title_font_size': 16,
     'axes_title_size': 16,
-    'axes_label_size': 14,
+    'axes_label_size': 16,
     'title_font_size': 18,
-    'legend_font_size': 13,
-    'legend_title_font_size': 13,
+    'unit_convertion_factor': 1.5,
+    'legend_font_size': 14,
+    'legend_title_font_size': 14,
     'pixel_inch_convertion_factor': 90,
 }
 
@@ -167,7 +168,7 @@ def set_plotly_layout(
     height = int(
         PLOTLY_CONFIG['pixel_inch_convertion_factor']
         * height
-        / MPL_CONFIG['unit_convertion_factor']
+        / PLOTLY_CONFIG['unit_convertion_factor']
     )
     if legend_label_map is not None:
         assert isinstance(legend_label_map, dict), 'Legend label map must be a dict'
