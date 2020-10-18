@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-import plotly.express as px
 import plotly.io
-import pylab
 from loguru import logger
 
 from IPython import get_ipython

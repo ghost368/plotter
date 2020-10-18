@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.lib.arraypad import _set_pad_area
-import seaborn as sns
-import plotly.express as px
-import plotly.io
 import pandas as pd
+from typing import List, Tuple
 
-sns.set()  # set matplotlib settings to seaborn default
-plotly.io.templates.default = 'seaborn'  # use plotly seaborn theme
+from .types import Axis, FigureMpl, FigurePlotly
 
 MPL_CONFIG = {
     'default_fig_width': 10,
@@ -32,29 +28,29 @@ PLOTLY_CONFIG = {
 }
 
 
-# tools
-def get_mpl_axes(
-    height=None,
-    ncols=None,
-    wide=False,
-    wratios=None,
-):
+def generate_mpl_figure(
+    height: int = None,
+    ncols: int = None,
+    wide: bool = False,
+    wratios: List[float] = None,
+) -> Tuple[FigureMpl, List[Axis]]:
     """Get axes from plt.subplots with simpler interface and default settings
 
     Args:
-        height (int, optional): Plot height in units. Defaults to _MPL_CONFIG['default_fig_width'].
-        ncols (int, optional): Number of subplot columns. Defaults to _MPL_CONFIG['default_number_cols'].
-        wide (bool, optional): If a wider plot should be used. Defaults to False.
-        wratios (list-like, optional): Subplot width ratios, default will result in equal width. Defaults to None.
-        return_fig (bool, optional): If the figure is returned together with the axes. Defaults to False.
+        height (int, optional): Plot height in units
+        ncols (int, optional): Number of subplot columns
+        wide (bool, optional): If a wider plot should be used
+        wratios (list-like, optional): Subplot width ratios, default will result in equal width
 
     Returns:
-        [tuple, ax]: tuple of axes, single ax, or (fig, axes tuple)
+        tuple: tuple of a figure and a list of axes
     """
     if height is None:
         height = MPL_CONFIG['default_height_units']
     if ncols is None:
         ncols = MPL_CONFIG['default_number_cols']
+
+    # specify figsize
     figsize = [
         MPL_CONFIG['default_fig_width'],
         height / MPL_CONFIG['unit_convertion_factor'],
@@ -63,6 +59,8 @@ def get_mpl_axes(
         if not wide:
             figsize[0] = MPL_CONFIG['default_small_fig_width']
     figsize = tuple(figsize)
+
+    # specify width ratios
     if wratios is not None:
         if len(wratios) != ncols:
             raise ValueError(
@@ -71,31 +69,35 @@ def get_mpl_axes(
         gridspec_kw = {'width_ratios': list(wratios)}
     else:
         gridspec_kw = None
+
     fig, axes = plt.subplots(1, ncols, figsize=figsize, gridspec_kw=gridspec_kw)
+
+    # plt.subplots return ndarray of axes if more than 1
     if not isinstance(axes, np.ndarray):
         axes = np.array([axes])
+    axes = list(axes)
     return fig, axes
 
 
 def set_mpl_layout(
-    ax,
-    title=None,
-    xlabel=None,
-    ylabel=None,
-    legend=True,
-    legend_outside=True,
-    legend_labels=None,
+    ax: Axis,
+    title: str = None,
+    xlabel: str = None,
+    ylabel: str = None,
+    legend: bool = True,
+    legend_outside: bool = True,
+    legend_labels: List[str] = None,
     **kwargs,
 ):
     """Wrapper to specify certain layout properties for mpl subplots
 
     Args:
-        ax ([ax]): matplotlib axis
-        title (str, optional): Title. Defaults to None.
-        xlabel (str, optional): X-label name. Defaults to None.
-        ylabel (str, optional): Y-label name. Defaults to None.
-        legend (bool, optional): If the legend is shown. Defaults to True.
-        legend_outside (bool, optional): If the legend is located outside the plot. Defaults to True.
+        ax (Axis): matplotlib axis
+        title (str, optional): Title
+        xlabel (str, optional): X-label name
+        ylabel (str, optional): Y-label name
+        legend (bool, optional): If the legend is shown
+        legend_outside (bool, optional): If the legend is located outside the plot
     """
     if title is not None:
         ax.set_title(title)
@@ -103,6 +105,16 @@ def set_mpl_layout(
         ax.set_xlabel(xlabel)
     if ylabel is not None:
         ax.set_ylabel(ylabel)
+    set_ax_legend(ax, legend, legend_outside, legend_labels)
+    plt.tight_layout()
+
+
+def set_ax_legend(
+    ax: Axis,
+    legend: bool = True,
+    legend_outside: bool = True,
+    legend_labels: List[str] = None,
+):
     if legend:
         legend_kwargs = {}
         if legend_outside:
@@ -111,38 +123,39 @@ def set_mpl_layout(
         if legend_labels is not None:
             legend_kwargs['labels'] = legend_labels
         ax.legend(**legend_kwargs)
-    plt.tight_layout()
+    else:
+        leg = ax.get_legend()
+        if leg is not None:
+            leg.remove()  # legend = False can also be used
 
 
 def set_plotly_layout(
-    fig,
-    height=None,
-    title=None,
-    xlabel=None,
-    ylabel=None,
-    legend=True,
-    wide=False,
-    is_svg=False,
-    legend_label_map=None,
+    fig: FigurePlotly,
+    height: int = None,
+    title: str = None,
+    xlabel: str = None,
+    ylabel: str = None,
+    legend: bool = True,
+    wide: bool = False,
+    is_svg: bool = False,
+    legend_label_map: dict = None,
     **kwargs,
 ):
     """Simple interface for modifying the layout of plotly plot
 
     Args:
-        fig ([figure]): Figure to modify
-        height (int, optional): Height in units. Defaults to 8.
-        title (str, optional): Title. Defaults to None.
-        xlabel (str, optional): X-label name. Defaults to None.
-        ylabel (str, optional): Y-label name. Defaults to None.
-        legend (bool, optional): If the legend is show. Defaults to True.
-        wide (bool, optional): If larger plot width is used. Defaults to False.
+        fig (FigurePlotly): Figure to modify
+        height (int, optional): Height in units
+        title (str, optional): Title
+        xlabel (str, optional): X-label name
+        ylabel (str, optional): Y-label name
+        legend (bool, optional): If the legend is show
+        wide (bool, optional): If larger plot width is used
         is_svg (bool, optional): If static svg renderer is used - will result in no interactivity, but
                 can be exported with nbconvert to pdf. Defaults to False.
         legend_label_map ([dict-like], optional): Mapping to modify legend names, absent names will remain the
-                same. Defaults to None.
+                same
     """
-    if height is None:
-        height = MPL_CONFIG['default_height_units']
     fig.update_layout(
         xaxis_title_font_size=PLOTLY_CONFIG['title_font_size'],
         yaxis_title_font_size=PLOTLY_CONFIG['title_font_size'],
@@ -158,23 +171,30 @@ def set_plotly_layout(
         fig.update_layout(xaxis_title_text=xlabel)
     if ylabel is not None:
         fig.update_layout(yaxis_title_text=ylabel)
+
+    # adjusting legend
     fig.update_layout(showlegend=legend)
+    if legend:
+        if legend_label_map is not None:
+            assert isinstance(legend_label_map, dict), 'Legend label map must be a dict'
+            for fd in fig.data:
+                if fd['name'] in legend_label_map:
+                    fd['name'] = legend_label_map[fd['name']]
+
+    # specifying width and height
     width = (
         MPL_CONFIG['default_fig_width'] * PLOTLY_CONFIG['pixel_inch_convertion_factor']
         if wide
         else MPL_CONFIG['default_small_fig_width']
         * PLOTLY_CONFIG['pixel_inch_convertion_factor']
     )
+    if height is None:
+        height = MPL_CONFIG['default_height_units']
     height = int(
         PLOTLY_CONFIG['pixel_inch_convertion_factor']
         * height
         / PLOTLY_CONFIG['unit_convertion_factor']
     )
-    if legend_label_map is not None:
-        assert isinstance(legend_label_map, dict), 'Legend label map must be a dict'
-        for fd in fig.data:
-            if fd['name'] in legend_label_map:
-                fd['name'] = legend_label_map[fd['name']]
     if not is_svg:
         fig.update_layout(width=width, height=height)
     else:
