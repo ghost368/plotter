@@ -64,7 +64,7 @@ class Plot:
             return isinstance(self._fig, FigureMpl)
 
     def tight_layout(self):
-        if self.has_fig():
+        if self.has_fig() and self.engine == 'matplotlib':
             self._fig.tight_layout()
 
 
