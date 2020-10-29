@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from qplot.layout import set_ax_legend
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
