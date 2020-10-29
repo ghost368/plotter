@@ -86,11 +86,11 @@ class BarAnnotator:
             ax.annotate(f'{value:.{self.n_decim}f}', pos, **cfg)
 
 
-def plot_func(func: Callable, ax: Axis, n_xvalues: int = 1000):
+def plot_func(func: Callable, ax: Axis, n_xvalues: int = 1000, **kwargs):
     """ Plot function on a given axis for the current axis limits range """
     func = np.vectorize(func)
     xvals = np.linspace(*ax.get_xlim(), n_xvalues)
-    ax.plot(xvals, func(xvals))
+    ax.plot(xvals, func(xvals), **kwargs)
 
 
 def align_ticks(ax1: Axis, ax2: Axis):
