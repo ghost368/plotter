@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "qplot"
-version = "0.3.1"
+name = "plotter"
+version = "0.4.0"
 description = "Plotting configurations for matplotlib, seaborn and plotly"
 authors = ["Vlad Stazhynski <stazhynski@gmail.com>"]
 
