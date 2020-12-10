@@ -62,6 +62,12 @@ class Plot:
         else:
             return isinstance(self._fig, FigureMpl)
 
+    def get_fig(self):
+        if self.has_fig():
+            return self._fig
+        else:
+            raise ValueError('The object does not contain figure')
+
     def tight_layout(self):
         if self.has_fig() and self.engine == 'matplotlib':
             self._fig.tight_layout()
@@ -77,8 +83,8 @@ def plot(
     engine: Engine = 'matplotlib',
     twin_ax: bool = False,
     align_ticks: bool = True,
-    lcolor: str = 'b',
-    rcolor: str = 'r',
+    color1: str = 'b',
+    color2: str = 'r',
     legend: bool = None,
     legend_outside: bool = True,
     **kwargs,
@@ -139,8 +145,8 @@ def plot(
                 tools.align_ticks(plot_.ax(1), plot_.ax(2))
 
             # adding colors to ticks and labels
-            plot_.ax(1).tick_params(axis='y', labelcolor=rcolor, color=rcolor)
-            plot_.ax(2).tick_params(axis='y', labelcolor=lcolor, color=lcolor)
+            plot_.ax(1).tick_params(axis='y', labelcolor=color1, color=color1)
+            plot_.ax(2).tick_params(axis='y', labelcolor=color2, color=color2)
 
         plot_.tight_layout()
 
